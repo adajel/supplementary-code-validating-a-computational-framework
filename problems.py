@@ -11,7 +11,8 @@ class Problem(ProblemBase):
     def excitatory_currents(self, phi_NE, E_Na_N, E_K_N, E_Cl_N):
         """ Excitatory currents for initiating wave - neuron """
         # set conductance
-        Gmax = 5.0          # max conductance (S/m^2)
+        #Gmax = 0.6          # max conductance (S/m^2)
+        Gmax = 0.3          # max conductance (S/m^2)
         LE = 2.0e-5         # stimulate zone at leftmost part of domain
         tE = 2.0            # time of stimuli (s)
         GE = Expression('Gmax*cos(pi*x[0]/(2.0*LE))*cos(pi*x[0]/(2.0*LE))*\
@@ -312,10 +313,11 @@ class ProblemStimPumpsOff(ProblemBase):
         self.set_immobile_ions()
         return
 
-class ProblemBlockKIR(Problem):
+class ProblemBlockKIR50(Problem):
+    # NO ALTERATIONS MM, ONLY ALTERING SS
     """ Problem where CSD wave is initiated by excitatory currents """
     def __init(self, mesh, t_PDE, t_ODE):
-        Problem.__init__(self, mesh, t_PDE, t_ODE)
+         Problem.__init__(self, mesh, t_PDE, t_ODE)
 
     def set_parameters(self):
         """ set the problems physical parameters """
@@ -327,33 +329,32 @@ class ProblemBlockKIR(Problem):
         # membrane parameters
         gamma_NE = Constant(5.3849e5)   # area of membrane per volume - neuron (1/m)
         gamma_GE = Constant(6.3849e5)   # area of membrane per volume - glial  (1/m)
-
         gamma_M = [gamma_NE, gamma_GE]
 
-        nw_NE = Constant(5.4e-10)       # hydraulic permeability - neuron (m/s/(mol/m^3))
-        nw_GE = Constant(5.4e-10)       # hydraulic permeability - glial  (m/s/(mol/m^3))
+        nw_NE = Constant(5.4e-10)      # hydraulic permeability - neuron (m/s/(mol/m^3))
+        nw_GE = Constant(5.4e-10)      # hydraulic permeability - glial  (m/s/(mol/m^3))
         nw_M = [nw_NE, nw_GE]
 
-        C_NE = Constant(0.75e-2)        # capacitance - neuron (F/m^2)
-        C_GE = Constant(0.75e-2)        # capacitance - glial  (F/m^2)
+        C_NE = Constant(0.75e-2)       # capacitance - neuron (F/m^2)
+        C_GE = Constant(0.75e-2)       # capacitance - glial  (F/m^2)
         C_M = [C_NE, C_GE]
 
         # ion specific parameters
-        D_Na = Constant(1.33e-9)        # diffusion coefficient - sodium (m^2/s)
-        D_K = Constant(1.96e-9)         # diffusion coefficient - potassium (m^2/s)
-        D_Cl = Constant(2.03e-9)        # diffusion coefficient - chloride (m^2/s)
-        D_Glu = Constant(7.6e-10)       # diffusion coefficient - glutamate (m^2/s)
+        D_Na = Constant(1.33e-9)       # diffusion coefficient - sodium (m^2/s)
+        D_K = Constant(1.96e-9)        # diffusion coefficient - potassium (m^2/s)
+        D_Cl = Constant(2.03e-9)       # diffusion coefficient - chloride (m^2/s)
+        D_Glu = Constant(7.6e-10)      # diffusion coefficient - glutamate (m^2/s)
         D = [D_Na, D_K, D_Cl, D_Glu]
 
-        z_Na = Constant(1.0)            # valence - sodium (Na)
-        z_K = Constant(1.0)             # valence - potassium (K)
-        z_Cl = Constant(-1.0)           # valence - chloride (Cl)
-        z_Glu = Constant(0.0)           # valence - chloride (Cl)
-        z_0 = Constant(-1.0)            # valence immobile ions
+        z_Na = Constant(1.0)           # valence - sodium (Na)
+        z_K = Constant(1.0)            # valence - potassium (K)
+        z_Cl = Constant(-1.0)          # valence - chloride (Cl)
+        z_Glu = Constant(0.0)          # valence - chloride (Cl)
+        z_0 = Constant(-1.0)           # valence immobile ions
         z = [z_Na, z_K, z_Cl, z_Glu, z_0]
 
-        xie_N = Constant(0.0)           # scaling factor effective diffusion neuron
-        xie_G = Constant(0.05)          # scaling factor effective diffusion glial
+        xie_N = Constant(0.0)          # scaling factor effective diffusion neuron
+        xie_G = Constant(0.05)         # scaling factor effective diffusion glial
         xie = [xie_N, xie_G]
 
         ################################################################
@@ -367,19 +368,17 @@ class ProblemBlockKIR(Problem):
         g_Na_leak_N = 2.0e-1   # sodium (Na)         - neuron (S/m^2)
         g_K_leak_N  = 7.0e-1   # potassium (K)       - neuron (S/m^2)
         g_Cl_leak_N = 2.0      # chloride (Cl)       - neuron (S/m^2)
-        # Updated with block KIR 30% values
-        g_Na_leak_G = 2.1e-2   # sodium (Na)         - glial  (S/m^2)
-        g_Cl_leak_G = 4.0e-1   # chloride (Cl)       - neuron (S/m^2)
+        g_Na_leak_G = 7.2e-2   # sodium (Na)         - glial  (S/m^2)
+        g_Cl_leak_G = 5.0e-1   # chloride (Cl)       - neuron (S/m^2)
 
         # other membrane mechanisms
+        g_NaKCl = Constant(8.13e-4) # NaKCl cotransporter - glial  (A/m^2)
         # Updated with block KIR 30% values
         g_KIR_0_base = 1.3
-        g_KIR_0 = Constant(g_KIR_0_base*0.3)     # K inward rectifier  - glial  (S/m^2)
-        g_NaKCl = Constant(4.065e-4)             # NaKCl cotransporter - glial  (A/m^2)
+        g_KIR_0 = Constant(g_KIR_0_base*0.5)     # K inward rectifier  - glial  (S/m^2)
 
         # pump
-        # Updated with block KIR 30% values
-        I_G = Constant(0.0130) # max pump rate       - glial  (A/m^2)
+        I_G = Constant(0.0372) # max pump rate       - glial  (A/m^2)
         I_N = Constant(0.1372) # max pump rate       - neuron (A/m^2)
         m_Na = 7.7             # pump threshold      - both   (mol/m^3)
         m_K = 2.0              # pump threshold      - both   (mol/m^3)
@@ -407,7 +406,8 @@ class ProblemBlockKIR(Problem):
                   'D':D, 'z':z,
                   'g_Na_leak_N':g_Na_leak_N, 'g_K_leak_N':g_K_leak_N,
                   'g_Cl_leak_N':g_Cl_leak_N,
-                  'g_Na_leak_G':g_Na_leak_G, 'g_Cl_leak_G':g_Cl_leak_G,
+                  'g_Na_leak_G':g_Na_leak_G,
+                  'g_Cl_leak_G':g_Cl_leak_G,
                   'g_KDR':g_KDR, 'g_KA':g_KA, 'g_NaP':g_NaP, 'g_NaT':g_NaT,
                   'I_N':I_N, 'I_G':I_G, 'm_K':m_K, 'm_Na':m_Na,
                   'g_KIR_0':g_KIR_0, 'g_NaKCl':g_NaKCl,
@@ -417,35 +417,181 @@ class ProblemBlockKIR(Problem):
 
         # set physical parameters
         self.params = params
-        # calculate and set immobile ions
-        self.set_immobile_ions()
         return
 
     def set_initial_conds_PDE(self):
         """ set the PDE problems initial conditions """
-
         self.alpha_N_init = '0.5'   # volume fraction neuron
         self.alpha_G_init = '0.3'   # volume fraction glial
 
-        self.Na_N_init = '9.3'      # neuron sodium concentration (mol/m^3)
-        self.K_N_init = '130'       # neuron potassium concentration (mol/m^3)
-        self.Cl_N_init = '8.7'      # neuron chloride concentration (mol/m^3)
+        self.Na_N_init = '9.7'      # neuron sodium concentration (mol/m^3)
+        self.K_N_init = '129.5'     # neuron potassium concentration (mol/m^3)
+        self.Cl_N_init = '7.6'      # neuron chloride concentration (mol/m^3)
 
         self.Na_G_init = '14'       # glial sodium concentration (mol/m^3)
-        self.K_G_init = '130'       # glial potassium concentration (mol/m^3)
-        self.Cl_G_init = '8.5'      # glial chloride concentration (mol/m^3)
+        self.K_G_init = '130.5'     # glial potassium concentration (mol/m^3)
+        self.Cl_G_init = '11.5'     # glial chloride concentration (mol/m^3)
 
-        self.Na_E_init = '140.5'    # ECS sodium concentration (mol/m^3)
-        self.K_E_init = '4'         # ECS potassium concentration (mol/m^3)
-        self.Cl_E_init = '113'      # ECS chloride concentration (mol/m^3)
+        self.Na_E_init = '140.7'    # ECS sodium concentration (mol/m^3)
+        self.K_E_init = '3.55'      # ECS potassium concentration (mol/m^3)
+        self.Cl_E_init = '112.5'    # ECS chloride concentration (mol/m^3)
 
         self.Glu_N_init = '10'      # neuron glutamate concentration (mol/m^3)
         self.Glu_G_init = '10.0e-3' # glial glutamate concentration (mol/m^3)
         self.Glu_E_init = '1.0e-5'  # ECS glutamate concentration (mol/m^3)
 
-        # steady state with 30 % reduced KIR
-        self.phi_N_init = '-0.0685' # neuron potential (V)
-        self.phi_G_init = '-0.078'  # neuron potential (V)
+        self.phi_N_init = '-0.072'  # neuron potential (V)
+        self.phi_G_init = '-0.072'  # neuron potential (V)
+        self.phi_E_init = '0.0'     # ECS potential (V)
+
+        self.inits_PDE = Expression((self.alpha_N_init, \
+                                     self.alpha_G_init, \
+                                     self.Na_N_init, \
+                                     self.Na_G_init, \
+                                     self.Na_E_init, \
+                                     self.K_N_init, \
+                                     self.K_G_init, \
+                                     self.K_E_init, \
+                                     self.Cl_N_init, \
+                                     self.Cl_G_init, \
+                                     self.Cl_E_init, \
+                                     self.Glu_N_init, \
+                                     self.Glu_G_init, \
+                                     self.Glu_E_init, \
+                                     self.phi_N_init, \
+                                     self.phi_G_init, \
+                                     self.phi_E_init), degree=4)
+        return
+
+class ProblemBlockKIR70(Problem):
+    # NO ALTERATIONS MM, ONLY ALTERING SS
+    """ Problem where CSD wave is initiated by excitatory currents """
+    def __init(self, mesh, t_PDE, t_ODE):
+         Problem.__init__(self, mesh, t_PDE, t_ODE)
+
+    def set_parameters(self):
+        """ set the problems physical parameters """
+        # physical model parameters
+        temperature = Constant(310.15) # temperature - (K)
+        F = Constant(96485.332)        # Faraday's constant - (C/mol)
+        R = Constant(8.3144598)        # gas constant - (J/(mol*K))
+
+        # membrane parameters
+        gamma_NE = Constant(5.3849e5)   # area of membrane per volume - neuron (1/m)
+        gamma_GE = Constant(6.3849e5)   # area of membrane per volume - glial  (1/m)
+        gamma_M = [gamma_NE, gamma_GE]
+
+        nw_NE = Constant(5.4e-10)      # hydraulic permeability - neuron (m/s/(mol/m^3))
+        nw_GE = Constant(5.4e-10)      # hydraulic permeability - glial  (m/s/(mol/m^3))
+        nw_M = [nw_NE, nw_GE]
+
+        C_NE = Constant(0.75e-2)       # capacitance - neuron (F/m^2)
+        C_GE = Constant(0.75e-2)       # capacitance - glial  (F/m^2)
+        C_M = [C_NE, C_GE]
+
+        # ion specific parameters
+        D_Na = Constant(1.33e-9)       # diffusion coefficient - sodium (m^2/s)
+        D_K = Constant(1.96e-9)        # diffusion coefficient - potassium (m^2/s)
+        D_Cl = Constant(2.03e-9)       # diffusion coefficient - chloride (m^2/s)
+        D_Glu = Constant(7.6e-10)      # diffusion coefficient - glutamate (m^2/s)
+        D = [D_Na, D_K, D_Cl, D_Glu]
+
+        z_Na = Constant(1.0)           # valence - sodium (Na)
+        z_K = Constant(1.0)            # valence - potassium (K)
+        z_Cl = Constant(-1.0)          # valence - chloride (Cl)
+        z_Glu = Constant(0.0)          # valence - chloride (Cl)
+        z_0 = Constant(-1.0)           # valence immobile ions
+        z = [z_Na, z_K, z_Cl, z_Glu, z_0]
+
+        xie_N = Constant(0.0)          # scaling factor effective diffusion neuron
+        xie_G = Constant(0.05)         # scaling factor effective diffusion glial
+        xie = [xie_N, xie_G]
+
+        ################################################################
+        # permeability for voltage gated membrane currents
+        g_NaT = 0.0            # transient Na        - neuron (S/m^2)
+        g_NaP = 2.0e-7         # persistent Na       - neuron (S/m^2)
+        g_KDR = 1.0e-5         # K delayed rectifier - neuron (S/m^2)
+        g_KA  = 1.0e-6         # transient K         - neuron (S/m^2)
+
+        # conductivity for leak currents
+        g_Na_leak_N = 2.0e-1   # sodium (Na)         - neuron (S/m^2)
+        g_K_leak_N  = 7.0e-1   # potassium (K)       - neuron (S/m^2)
+        g_Cl_leak_N = 2.0      # chloride (Cl)       - neuron (S/m^2)
+        g_Na_leak_G = 7.2e-2   # sodium (Na)         - glial  (S/m^2)
+        g_Cl_leak_G = 5.0e-1   # chloride (Cl)       - neuron (S/m^2)
+
+        # other membrane mechanisms
+        g_NaKCl = Constant(8.13e-4) # NaKCl cotransporter - glial  (A/m^2)
+        # Updated with block KIR 30% values
+        g_KIR_0_base = 1.3
+        g_KIR_0 = Constant(g_KIR_0_base*0.3)     # K inward rectifier  - glial  (S/m^2)
+
+        # pump
+        I_G = Constant(0.0372) # max pump rate       - glial  (A/m^2)
+        I_N = Constant(0.1372) # max pump rate       - neuron (A/m^2)
+        m_Na = 7.7             # pump threshold      - both   (mol/m^3)
+        m_K = 2.0              # pump threshold      - both   (mol/m^3)
+
+        # NMDA receptor
+        g_NMDA = 1.0e-7        # NMDA permeability   - neuron (S/m^2)
+        Mg_E = 2.0             # ECS magnesium       - neuron (mol/m^3)
+        k1 = 3.94              # y -> D1             - neuron (1/s)
+        k2 = 1.94              # D1 -> y             - neuron (1/s)
+        k3 = 0.0213            # D1 -> D2            - neuron (1/s)
+        k4 = 0.00277           # D2 -> D1            - neuron (1/s)
+
+        # glutamate cycle parameters
+        nu = 0.1               # reabsorbation rate percent
+        Ar = 0.1               # release rate - impacts ECS Glu (mol/(m^3s))
+        Be = 1.0/42            # decay rate (1/s)
+        Bg = 1.0/84            # cycle rate (1/s)
+        Rg = 1.0e-3            # glial fraction
+        Re = 1.0e-3            # ECS fraction
+        eps = 22.99e-3         # saturation constant (mol/m^3)
+
+        # gather physical parameters
+        params = {'temperature':temperature, 'F':F, 'R':R,
+                  'gamma_M':gamma_M, 'nw_M':nw_M, 'C_M':C_M, 'xie':xie,
+                  'D':D, 'z':z,
+                  'g_Na_leak_N':g_Na_leak_N, 'g_K_leak_N':g_K_leak_N,
+                  'g_Cl_leak_N':g_Cl_leak_N,
+                  'g_Na_leak_G':g_Na_leak_G,
+                  'g_Cl_leak_G':g_Cl_leak_G,
+                  'g_KDR':g_KDR, 'g_KA':g_KA, 'g_NaP':g_NaP, 'g_NaT':g_NaT,
+                  'I_N':I_N, 'I_G':I_G, 'm_K':m_K, 'm_Na':m_Na,
+                  'g_KIR_0':g_KIR_0, 'g_NaKCl':g_NaKCl,
+                  'nu':nu, 'Ar':Ar, 'Be':Be, 'Bg':Bg, 'Rg':Rg, 'Re':Re,
+                  'eps':eps, 'g_NMDA':g_NMDA, 'Mg_E':Mg_E,
+                  'k1':k1, 'k2':k2, 'k3':k3, 'k4':k4}
+
+        # set physical parameters
+        self.params = params
+        return
+
+    def set_initial_conds_PDE(self):
+        """ set the PDE problems initial conditions """
+        self.alpha_N_init = '0.5'   # volume fraction neuron
+        self.alpha_G_init = '0.3'   # volume fraction glial
+
+        self.Na_N_init = '11.3'     # neuron sodium concentration (mol/m^3)
+        self.K_N_init = '127.6'     # neuron potassium concentration (mol/m^3)
+        self.Cl_N_init = '5.9'      # neuron chloride concentration (mol/m^3)
+
+        self.Na_G_init = '13.7'     # glial sodium concentration (mol/m^3)
+        self.K_G_init = '130'       # glial potassium concentration (mol/m^3)
+        self.Cl_G_init = '19'       # glial chloride concentration (mol/m^3)
+
+        self.Na_E_init = '141'      # ECS sodium concentration (mol/m^3)
+        self.K_E_init = '2.8'       # ECS potassium concentration (mol/m^3)
+        self.Cl_E_init = '110'      # ECS chloride concentration (mol/m^3)
+
+        self.Glu_N_init = '10'      # neuron glutamate concentration (mol/m^3)
+        self.Glu_G_init = '10.0e-3' # glial glutamate concentration (mol/m^3)
+        self.Glu_E_init = '1.0e-5'  # ECS glutamate concentration (mol/m^3)
+
+        self.phi_N_init = '-0.078'  # neuron potential (V)
+        self.phi_G_init = '-0.053'  # neuron potential (V)
         self.phi_E_init = '0.0'     # ECS potential (V)
 
         self.inits_PDE = Expression((self.alpha_N_init, \

@@ -656,7 +656,7 @@ class Plotter():
             ax.text(-0.12, 1.06, letters[num], transform=ax.transAxes)
 
         # save figure to file
-        fname_res = path_figs + 'timeplot_summary_200'
+        fname_res = path_figs + 'timeplot_summary_%d' % Tstop
         plt.savefig(fname_res + '.svg', format='svg')
         plt.close()
 
@@ -742,7 +742,7 @@ class Plotter():
         plt.subplots_adjust(wspace=0.25)
 
         # define filename
-        fname_res = path_figs + 'timeplot.png'
+        fname_res = path_figs + 'timeplot_%d.png' % Tstop
         # save figure to file
         fig.savefig(fname_res, bbox_inches='tight')
         plt.close()
