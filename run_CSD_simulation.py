@@ -16,15 +16,12 @@ if __name__ == '__main__':
 
     # create mesh
     N = 8000                              # mesh size
-    #N = 4000                              # mesh size
     L = 0.01                              # m
     mesh = IntervalMesh(N, 0, L)          # create mesh
     boundary_point = "near(x[0], %g)" % L # point on boundary
     # time variables
     dt_value = 3.125e-3
-    #dt_value = 1.0e-2
-    Tstop = 5                           # end time (s)
-    #Tstop = 201                           # end time (s)
+    Tstop = 201                           # end time (s)
 
     # Simulation steady state with no CSD trigger
     t_PDE_A = Constant(0.0)
@@ -61,13 +58,6 @@ if __name__ == '__main__':
     path_E = 'block_KIR_70/'
     E = [problem_E, path_E, Tstop]
 
-    # problem with different gammas
-    t_PDE_F = Constant(0.0)
-    t_ODE_F = Constant(0.0)
-    problem_F = ProblemBlockKIR50(mesh, boundary_point, t_PDE_F, t_ODE_F)
-    path_F = 'block_KIR_50_8000/'
-    F = [problem_F, path_F, Tstop]
-
     # problem with AQP4 deletion
     t_PDE_G = Constant(0.0)
     t_ODE_G = Constant(0.0)
@@ -89,8 +79,7 @@ if __name__ == '__main__':
     path_I = 'new_gammas/'
     I = [problem_I, path_I, Tstop]
 
-    #for X in [A, B, C, D, E, F, G, H]:
-    for X in [F]:
+    for X in [A, B, C, D, E, G, H]:
         # extract problem and path
         problem = X[0]; path = X[1]; Tstop = X[2]
 
@@ -117,7 +106,6 @@ if __name__ == '__main__':
         # create plotter object for visualizing results
         P = Plotter(problem, path_data)
 
-        """
         # initiate wave speed and duration
         P.init_wavespeed()
         P.init_duration()
@@ -134,6 +122,3 @@ if __name__ == '__main__':
         # save pretty summary plot of snapshot at Tstop
         P.make_spaceplot(path_figs, 60)
         P.make_timeplot(path_figs, 201)
-        """
-        P.make_spaceplot(path_figs, Tstop)
-        P.make_timeplot(path_figs, Tstop)
