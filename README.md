@@ -12,14 +12,14 @@ To get the environment needed (all dependencies etc.) to run the code, download
 the docker container by running:
 
     docker run -t -v $(pwd):/home/fenics -i quay.io/fenicsproject/stable
-
-Note that plotting requires LaTex.
+    sudo apt-get update
+    sudo apt install texlive texlive-latex-extra texlive-fonts-recommended dvipng
 
 ### Usage ###
 
-The numerical experiment can be run:
+The numerical experiments can be run:
 
-    python run_CSD_simulation.py
+    python3 run_CSD_simulation.py
 
 ### Files ###
 
